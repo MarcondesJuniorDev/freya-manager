@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { Plus, Edit2, Trash2, Tag, Check, AlertCircle } from '@lucide/vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Plus, Edit2, Trash2, Tag, AlertCircle } from '@lucide/vue';
+import { ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -16,6 +13,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 interface Brand {
     id: number;
@@ -25,7 +25,7 @@ interface Brand {
     products_count: number;
 }
 
-const props = defineProps<{
+defineProps<{
     brands: Brand[];
 }>();
 
@@ -64,7 +64,10 @@ const openEditModal = (brand: Brand) => {
 };
 
 const submitEdit = () => {
-    if (!currentBrand.value) return;
+    if (!currentBrand.value) {
+return;
+}
+
     form.put(`/brands/${currentBrand.value.id}`, {
         onSuccess: () => {
             isEditOpen.value = false;

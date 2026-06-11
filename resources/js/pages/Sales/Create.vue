@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { 
     ChevronLeft, 
@@ -9,21 +8,16 @@ import {
     Minus, 
     Trash2, 
     Camera, 
-    Sparkles, 
     AlertTriangle,
-    Notebook,
-    User,
-    Check,
-    Barcode,
-    Volume2
+    Barcode
 } from '@lucide/vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { ref, computed, onBeforeUnmount } from 'vue';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { useSonner } from '@/components/ui/sonner';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 interface Brand {
     id: number;
@@ -84,8 +78,12 @@ const manualEan = ref('');
 // Filter state
 const search = ref('');
 const filteredProducts = computed(() => {
-    if (!search.value) return props.products.slice(0, 8);
+    if (!search.value) {
+return props.products.slice(0, 8);
+}
+
     const query = search.value.toLowerCase();
+
     return props.products.filter(p => 
         p.name.toLowerCase().includes(query) || 
         (p.ean && p.ean.includes(query)) ||
@@ -95,7 +93,10 @@ const filteredProducts = computed(() => {
 
 // Selected customer info
 const selectedCustomer = computed(() => {
-    if (!form.customer_id) return null;
+    if (!form.customer_id) {
+return null;
+}
+
     return props.customers.find(c => c.id === Number(form.customer_id)) || null;
 });
 
@@ -110,9 +111,13 @@ const totalAmount = computed(() => {
 
 // Business rule check: limit verification for fiado
 const isOverLimit = computed(() => {
-    if (form.payment_method !== 'fiado' || !selectedCustomer.value) return false;
+    if (form.payment_method !== 'fiado' || !selectedCustomer.value) {
+return false;
+}
+
     const currentDebt = Number(selectedCustomer.value.balance);
     const limit = Number(selectedCustomer.value.max_credit_limit);
+
     return (currentDebt + totalAmount.value) > limit;
 });
 
@@ -124,6 +129,7 @@ const addToCart = (product: Product) => {
     
     if (product.stock_quantity <= currentQty) {
         alert(`Estoque insuficiente! Apenas ${product.stock_quantity} unidades disponíveis.`);
+
         return;
     }
 
@@ -140,7 +146,11 @@ const removeFromCart = (productId: number) => {
 
 const decreaseQty = (productId: number) => {
     const item = cart.value.find(item => item.product.id === productId);
-    if (!item) return;
+
+    if (!item) {
+return;
+}
+
     if (item.quantity > 1) {
         item.quantity--;
     } else {
@@ -150,7 +160,11 @@ const decreaseQty = (productId: number) => {
 
 const increaseQty = (productId: number) => {
     const item = cart.value.find(item => item.product.id === productId);
-    if (!item) return;
+
+    if (!item) {
+return;
+}
+
     if (item.product.stock_quantity > item.quantity) {
         item.quantity++;
     } else {
@@ -162,12 +176,16 @@ const increaseQty = (productId: number) => {
 const submitSale = () => {
     if (cart.value.length === 0) {
         alert('O carrinho está vazio.');
+
         return;
     }
+
     if (form.payment_method === 'fiado' && !form.customer_id) {
         alert('Selecione um cliente para a opção Fiado.');
+
         return;
     }
+
     if (isOverLimit.value) {
         if (!confirm('ATENÇÃO: Esta venda excederá o limite de crédito do cliente. Deseja prosseguir mesmo assim?')) {
             return;
@@ -207,12 +225,15 @@ const playBeep = () => {
 // Camera Scanning functionality
 const startCamera = async () => {
     isScanning.value = true;
+
     try {
         stream.value = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: 'environment' }
         });
+
         if (videoElement.value) {
             videoElement.value.srcObject = stream.value;
+
             // Native barcode detection loop if supported
             if ('BarcodeDetector' in window) {
                 requestAnimationFrame(detectBarcodes);
@@ -227,6 +248,7 @@ const startCamera = async () => {
 
 const stopCamera = () => {
     isScanning.value = false;
+
     if (stream.value) {
         stream.value.getTracks().forEach(track => track.stop());
         stream.value = null;
@@ -235,18 +257,24 @@ const stopCamera = () => {
 
 // Barcode Detector loop
 const detectBarcodes = async () => {
-    if (!videoElement.value || !isScanning.value) return;
+    if (!videoElement.value || !isScanning.value) {
+return;
+}
+
     try {
         const detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'ean_8'] });
         const barcodes = await detector.detect(videoElement.value);
+
         if (barcodes.length > 0) {
             const rawValue = barcodes[0].rawValue;
             handleBarcodeFound(rawValue);
+
             return;
         }
-    } catch (e) {
+    } catch {
         // Fallback or ignore
     }
+
     if (isScanning.value) {
         requestAnimationFrame(detectBarcodes);
     }
@@ -255,12 +283,14 @@ const detectBarcodes = async () => {
 const handleBarcodeFound = (barcode: string) => {
     playBeep();
     const product = props.products.find(p => p.ean === barcode);
+
     if (product) {
         addToCart(product);
         alert(`Sucesso: "${product.name}" adicionado ao carrinho!`);
     } else {
         alert(`Produto com código de barras "${barcode}" não cadastrado ou fora de estoque.`);
     }
+
     stopCamera();
 };
 
@@ -270,7 +300,10 @@ const simulateScan = (barcode: string) => {
 };
 
 const handleManualEanSubmit = () => {
-    if (!manualEan.value) return;
+    if (!manualEan.value) {
+return;
+}
+
     handleBarcodeFound(manualEan.value);
     manualEan.value = '';
 };

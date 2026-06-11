@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { ShoppingBag, ChevronRight, Plus, Calendar } from '@lucide/vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 interface Customer {
     name: string;
@@ -32,7 +32,7 @@ interface PaginatedSales {
     links: PaginationLink[];
 }
 
-const props = defineProps<{
+defineProps<{
     sales: PaginatedSales;
 }>();
 
@@ -42,6 +42,7 @@ const formatCurrency = (val: number) => {
 
 const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
+
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 };
 
@@ -52,12 +53,19 @@ const formatPaymentMethod = (method: string) => {
         pix: 'PIX',
         fiado: 'Caderneta (Fiado)'
     };
+
     return labels[method] || method;
 };
 
 const getMethodBadgeVariant = (method: string) => {
-    if (method === 'fiado') return 'destructive';
-    if (method === 'pix') return 'secondary';
+    if (method === 'fiado') {
+return 'destructive';
+}
+
+    if (method === 'pix') {
+return 'secondary';
+}
+
     return 'outline';
 };
 
@@ -135,7 +143,7 @@ defineOptions({
         <div v-if="sales.links && sales.links.length > 3" class="flex justify-center items-center gap-2 mt-4">
             <template v-for="link in sales.links" :key="link.label">
                 <Button v-if="link.url" as-child :variant="link.active ? 'default' : 'outline'" size="sm" class="rounded-xl min-w-[36px]" :class="{'bg-rose-600 hover:bg-rose-500 text-white': link.active}">
-                    <Link :href="link.url" v-html="link.label" />
+                    <Link :href="link.url"><span v-html="link.label"></span></Link>
                 </Button>
                 <span v-else v-html="link.label" class="px-3 py-1.5 text-xs text-muted-foreground" />
             </template>

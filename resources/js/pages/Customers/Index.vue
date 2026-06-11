@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
 import { Head, useForm, router, Link } from '@inertiajs/vue3';
-import { Plus, Edit2, Trash2, Users, Search, AlertCircle, Phone, Mail, BookOpen, MapPin } from '@lucide/vue';
+import { Plus, Edit2, Users, Search, Phone, BookOpen } from '@lucide/vue';
 import { useDebounceFn } from '@vueuse/core';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { ref, watch } from 'vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -17,6 +14,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 interface Customer {
     id: number;
@@ -98,7 +98,10 @@ const openEditModal = (customer: Customer) => {
 };
 
 const submitEdit = () => {
-    if (!currentCustomer.value) return;
+    if (!currentCustomer.value) {
+return;
+}
+
     form.put(`/customers/${currentCustomer.value.id}`, {
         onSuccess: () => {
             isEditOpen.value = false;

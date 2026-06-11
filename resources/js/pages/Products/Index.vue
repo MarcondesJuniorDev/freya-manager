@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
-import { Plus, Edit2, Trash2, Package, Search, AlertCircle, Eye, EyeOff, Barcode } from '@lucide/vue';
+import { Head, useForm, router, Link } from '@inertiajs/vue3';
+import { Plus, Edit2, Trash2, Package, Search, Eye, EyeOff, Barcode } from '@lucide/vue';
 import { useDebounceFn } from '@vueuse/core';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { ref, watch } from 'vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -17,6 +14,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 interface Brand {
     id: number;
@@ -107,9 +107,11 @@ const form = useForm({
 const openCreateModal = () => {
     form.reset();
     form.clearErrors();
+
     if (props.brands.length > 0) {
         form.brand_id = props.brands[0].id.toString();
     }
+
     isCreateOpen.value = true;
 };
 
@@ -140,7 +142,10 @@ const openEditModal = (product: Product) => {
 };
 
 const submitEdit = () => {
-    if (!currentProduct.value) return;
+    if (!currentProduct.value) {
+return;
+}
+
     form.put(`/products/${currentProduct.value.id}`, {
         onSuccess: () => {
             isEditOpen.value = false;
@@ -272,7 +277,7 @@ defineOptions({
         <div v-if="products.last_page > 1" class="flex justify-center items-center gap-2 mt-4">
             <template v-for="link in products.links" :key="link.label">
                 <Button v-if="link.url" as-child :variant="link.active ? 'default' : 'outline'" size="sm" class="rounded-xl min-w-[36px]" :class="{'bg-rose-600 hover:bg-rose-500 text-white': link.active}">
-                    <Link :href="link.url" v-html="link.label" />
+                    <Link :href="link.url"><span v-html="link.label"></span></Link>
                 </Button>
                 <span v-else v-html="link.label" class="px-3 py-1.5 text-xs text-muted-foreground" />
             </template>

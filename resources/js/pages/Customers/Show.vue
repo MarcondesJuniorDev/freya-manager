@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Head, useForm, Link } from '@inertiajs/vue3';
 import { 
     ChevronLeft, 
@@ -9,17 +8,14 @@ import {
     DollarSign, 
     Plus, 
     Minus, 
-    Calendar,
     Notebook,
     FileText,
     ExternalLink
 } from '@lucide/vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -28,6 +24,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 interface Sale {
     id: number;
@@ -97,14 +96,19 @@ const formatCurrency = (val: number) => {
 
 const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
+
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 };
 
 // WhatsApp link generator (Mobile-First helper)
 const getWhatsAppLink = (phone: string | null) => {
-    if (!phone) return '#';
+    if (!phone) {
+return '#';
+}
+
     const cleanNumber = phone.replace(/\D/g, '');
     const prefix = cleanNumber.startsWith('55') ? '' : '55';
+
     return `https://wa.me/${prefix}${cleanNumber}`;
 };
 

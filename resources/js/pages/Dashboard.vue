@@ -1,23 +1,19 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { 
-    LayoutGrid, 
-    ArrowUpRight, 
     Sparkles, 
     TrendingUp, 
     Package, 
     AlertTriangle, 
     Users, 
-    ArrowDownRight,
     ShoppingBag,
     DollarSign,
-    ChevronRight,
     Plus
 } from '@lucide/vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 interface Product {
     id: number;
@@ -62,6 +58,7 @@ const formatCurrency = (val: number) => {
 // Helper for dates
 const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
+
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 };
 
@@ -73,12 +70,19 @@ const formatPaymentMethod = (method: string) => {
         pix: 'PIX',
         fiado: 'Caderneta (Fiado)'
     };
+
     return labels[method] || method;
 };
 
 const getPaymentMethodBadgeVariant = (method: string) => {
-    if (method === 'fiado') return 'destructive';
-    if (method === 'pix') return 'secondary';
+    if (method === 'fiado') {
+return 'destructive';
+}
+
+    if (method === 'pix') {
+return 'secondary';
+}
+
     return 'outline';
 };
 
@@ -91,6 +95,7 @@ const chartPoints = props.chartData.map((d, index) => {
         ? (index / (props.chartData.length - 1)) * (chartWidth - 40) + 20 
         : chartWidth / 2;
     const y = chartHeight - ((d.total / maxChartValue) * (chartHeight - 40) + 20);
+
     return { x, y, label: d.date, value: d.total };
 });
 
