@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid } from '@lucide/vue';
+import { LayoutGrid, ShoppingCart, Users, Package, Tag, History } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -14,14 +14,38 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
-        href: dashboard(),
+        title: 'Painel Principal',
+        href: '/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: 'Venda Rápida',
+        href: '/sales/create',
+        icon: ShoppingCart,
+    },
+    {
+        title: 'Clientes (Caderneta)',
+        href: '/customers',
+        icon: Users,
+    },
+    {
+        title: 'Produtos (Estoque)',
+        href: '/products',
+        icon: Package,
+    },
+    {
+        title: 'Marcas',
+        href: '/brands',
+        icon: Tag,
+    },
+    {
+        title: 'Histórico de Vendas',
+        href: '/sales',
+        icon: History,
     },
 ];
 
