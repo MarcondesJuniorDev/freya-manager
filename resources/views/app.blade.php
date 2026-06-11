@@ -33,6 +33,11 @@
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        <link rel="manifest" href="/manifest.json">
+        
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="theme-color" content="#e11d48">
 
         @fonts
 
@@ -43,5 +48,14 @@
     </head>
     <body class="font-sans antialiased">
         <x-inertia::app />
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .catch(err => console.log('Service Worker registration failed:', err));
+                });
+            }
+        </script>
     </body>
 </html>
