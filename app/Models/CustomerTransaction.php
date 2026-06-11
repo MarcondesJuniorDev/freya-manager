@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CustomerTransaction extends Model
 {
@@ -24,12 +25,18 @@ class CustomerTransaction extends Model
         'transaction_date' => 'datetime',
     ];
 
-    public function customer()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Customer, $this>
+     */
+    public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }
 
-    public function sale()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Sale, $this>
+     */
+    public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
     }

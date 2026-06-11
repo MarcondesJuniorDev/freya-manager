@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
 class Customer extends Model
@@ -27,12 +27,18 @@ class Customer extends Model
         'max_credit_limit' => 'decimal:2',
     ];
 
-    public function sales()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Sale, $this>
+     */
+    public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
     }
 
-    public function transactions()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<CustomerTransaction, $this>
+     */
+    public function transactions(): HasMany
     {
         return $this->hasMany(CustomerTransaction::class);
     }

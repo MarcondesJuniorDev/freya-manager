@@ -23,15 +23,15 @@ class SaleItemFactory extends Factory
         return [
             'sale_id' => Sale::factory(),
             'product_id' => Product::factory(),
-            'quantity' => $quantity = $this->faker->numberBetween(1, 3),
+            'quantity' => $this->faker->numberBetween(1, 3),
             'unit_price' => function (array $attributes) {
-                return Product::find($attributes['product_id'])->sale_price;
+                return Product::where('id', $attributes['product_id'])->firstOrFail()->sale_price;
             },
             'unit_cost' => function (array $attributes) {
-                return Product::find($attributes['product_id'])->cost_price;
+                return Product::where('id', $attributes['product_id'])->firstOrFail()->cost_price;
             },
-            'subtotal' => function (array $attributes) use ($quantity) {
-                $price = Product::find($attributes['product_id'])->sale_price;
+            'subtotal' => function (array $attributes) {
+                $price = (float) Product::where('id', $attributes['product_id'])->firstOrFail()->sale_price;
                 return $price * $attributes['quantity'];
             },
         ];

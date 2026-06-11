@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $query = Product::with('brand');
 
@@ -47,7 +50,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'brand_id' => 'required|exists:brands,id',
@@ -70,7 +73,7 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'Produto adicionado com sucesso.');
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $product): RedirectResponse
     {
         $validated = $request->validate([
             'brand_id' => 'required|exists:brands,id',
@@ -93,7 +96,7 @@ class ProductController extends Controller
         return redirect()->back()->with('success', 'Produto atualizado com sucesso.');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Product $product): RedirectResponse
     {
         if ($product->saleItems()->count() > 0) {
             return redirect()->back()->withErrors(['error' => 'Não é possível excluir um produto que já possui vendas registradas.']);
@@ -107,7 +110,7 @@ class ProductController extends Controller
     /**
      * Look up product by EAN (barcode) for camera scanner quick sale checkout.
      */
-    public function lookupByEan($ean)
+    public function lookupByEan(string $ean): JsonResponse
     {
         $product = Product::with('brand')
             ->where('ean', $ean)

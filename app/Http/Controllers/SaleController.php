@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class SaleController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         $sales = Sale::with(['customer', 'items.product.brand'])
             ->orderBy('sale_date', 'desc')
@@ -22,7 +24,7 @@ class SaleController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(): Response
     {
         $customers = Customer::orderBy('name')->get();
         $products = Product::with('brand')
@@ -37,7 +39,7 @@ class SaleController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'customer_id' => 'nullable|exists:customers,id',
@@ -61,14 +63,14 @@ class SaleController extends Controller
 
                 // 1. Process items first to calculate subtotals and check inventory
                 foreach ($validated['items'] as $itemData) {
-                    $product = Product::findOrFail($itemData['product_id']);
+                    $product = Product::where('id', $itemData['product_id'])->firstOrFail();
 
                     if ($product->stock_quantity < $itemData['quantity']) {
                         throw new \Exception("Estoque insuficiente para o produto: {$product->name}");
                     }
 
-                    $unitPrice = $product->sale_price;
-                    $unitCost = $product->cost_price;
+                    $unitPrice = (float) $product->sale_price;
+                    $unitCost = (float) $product->cost_price;
                     $subtotal = $unitPrice * $itemData['quantity'];
 
                     $subtotalAmount += $subtotal;
@@ -104,13 +106,13 @@ class SaleController extends Controller
                 foreach ($saleItems as $sItem) {
                     $sale->items()->create($sItem);
 
-                    $product = Product::find($sItem['product_id']);
+                    $product = Product::where('id', $sItem['product_id'])->firstOrFail();
                     $product->decrement('stock_quantity', $sItem['quantity']);
                 }
 
                 // 4. Add Debit to Customer caderneta if payment method is "fiado"
                 if ($validated['payment_method'] === 'fiado') {
-                    $customer = Customer::findOrFail($validated['customer_id']);
+                    $customer = Customer::where('id', $validated['customer_id'])->firstOrFail();
                     $customer->addDebit(
                         $totalAmount,
                         "Compra a prazo (Fiado) - Venda #{$sale->id}",
@@ -128,7 +130,7 @@ class SaleController extends Controller
         }
     }
 
-    public function show(Sale $sale)
+    public function show(Sale $sale): Response
     {
         $sale->load(['customer', 'items.product.brand']);
         return Inertia::render('Sales/Show', [

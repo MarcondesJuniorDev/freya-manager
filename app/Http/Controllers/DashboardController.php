@@ -7,22 +7,23 @@ use App\Models\Product;
 use App\Models\Sale;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         // 1. Calculations for stock
-        $stockCost = Product::sum(DB::raw('cost_price * stock_quantity'));
-        $stockValue = Product::sum(DB::raw('catalog_price * stock_quantity'));
+        $stockCost = (float) Product::sum(DB::raw('cost_price * stock_quantity'));
+        $stockValue = (float) Product::sum(DB::raw('catalog_price * stock_quantity'));
         $potentialProfit = $stockValue - $stockCost;
 
         // 2. Outstanding debt (caderneta)
-        $fiadoReceivables = Customer::where('balance', '>', 0)->sum('balance');
+        $fiadoReceivables = (float) Customer::where('balance', '>', 0)->sum('balance');
 
         // 3. Sales statistics
-        $salesToday = Sale::whereDate('sale_date', today())->sum('total_amount');
-        $salesThisMonth = Sale::whereMonth('sale_date', now()->month)->sum('total_amount');
+        $salesToday = (float) Sale::whereDate('sale_date', today())->sum('total_amount');
+        $salesThisMonth = (float) Sale::whereMonth('sale_date', now()->month)->sum('total_amount');
 
         // 4. Low stock alert
         $lowStockProducts = Product::where('stock_quantity', '<=', DB::raw('min_stock_quantity'))
@@ -38,7 +39,8 @@ class DashboardController extends Controller
             ->get();
 
         // 6. Chart data (last 7 days of sales)
-        $chartData = Sale::select(
+        $chartData = DB::table('sales')
+            ->select(
                 DB::raw('DATE(sale_date) as date'),
                 DB::raw('SUM(total_amount) as total')
             )
@@ -47,8 +49,9 @@ class DashboardController extends Controller
             ->orderBy('date')
             ->get()
             ->map(function ($item) {
+                $timestamp = strtotime((string) $item->date);
                 return [
-                    'date' => date('d/m', strtotime($item->date)),
+                    'date' => $timestamp !== false ? date('d/m', $timestamp) : '',
                     'total' => (float) $item->total,
                 ];
             });

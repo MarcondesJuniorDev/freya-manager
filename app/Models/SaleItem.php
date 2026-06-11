@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SaleItem extends Model
 {
@@ -26,12 +27,18 @@ class SaleItem extends Model
         'subtotal' => 'decimal:2',
     ];
 
-    public function sale()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Sale, $this>
+     */
+    public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
     }
 
-    public function product()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Product, $this>
+     */
+    public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }

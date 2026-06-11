@@ -20,7 +20,8 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->unique()->words(3, true);
+        $words = $this->faker->unique()->words(3, true);
+        $name = is_array($words) ? implode(' ', $words) : $words;
         $costPrice = $this->faker->randomFloat(2, 10, 100);
         $catalogPrice = round($costPrice * $this->faker->randomFloat(2, 1.3, 1.8), 2);
 

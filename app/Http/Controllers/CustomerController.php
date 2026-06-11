@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\CustomerTransaction;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $query = Customer::query();
 
@@ -39,7 +41,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -57,7 +59,7 @@ class CustomerController extends Controller
         return redirect()->back()->with('success', 'Cliente cadastrado com sucesso.');
     }
 
-    public function show(Customer $customer)
+    public function show(Customer $customer): Response
     {
         $customer->load([
             'sales' => function ($query) {
@@ -73,7 +75,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function update(Request $request, Customer $customer)
+    public function update(Request $request, Customer $customer): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -89,7 +91,7 @@ class CustomerController extends Controller
         return redirect()->back()->with('success', 'Cliente atualizado com sucesso.');
     }
 
-    public function destroy(Customer $customer)
+    public function destroy(Customer $customer): RedirectResponse
     {
         if ($customer->sales()->count() > 0) {
             return redirect()->back()->withErrors(['error' => 'Não é possível excluir um cliente que possui vendas registradas.']);
@@ -103,7 +105,7 @@ class CustomerController extends Controller
     /**
      * Store a manual credit or debit transaction (e.g. paying down balance, cash payments).
      */
-    public function storeTransaction(Request $request, Customer $customer)
+    public function storeTransaction(Request $request, Customer $customer): RedirectResponse
     {
         $validated = $request->validate([
             'type' => 'required|in:debit,credit',
